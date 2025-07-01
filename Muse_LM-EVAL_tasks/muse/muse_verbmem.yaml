@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: verbmem
+task: muse_verbmem
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Evaluation of verbatim memorization in unlearning benchmarks.

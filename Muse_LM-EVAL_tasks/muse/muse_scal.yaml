@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: scal
+task: muse_scal
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Evaluation of scalability with respect to request size.

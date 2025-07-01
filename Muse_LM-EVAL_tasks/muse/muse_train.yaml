@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: train
+task: muse_train
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Training split of MUSE benchmark for internal testing.

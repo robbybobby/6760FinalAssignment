@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: raw
+task: muse_raw
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Raw dataset baseline (unfiltered).

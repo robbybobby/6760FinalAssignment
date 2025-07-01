@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: sust
+task: muse_sust
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Sustainability and repeated forgetting efficiency.

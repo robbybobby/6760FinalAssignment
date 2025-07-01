@@ -1,0 +1,8 @@
+dataset_path: muse-bench/MUSE-News
+subset: privleak
+task: muse_privleak
+output_type: multiple_choice
+fewshot_split: validation
+test_split: validation
+num_fewshot: 0
+description: Evaluation of private data leakage from unlearned models.
