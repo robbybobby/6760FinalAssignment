@@ -1,7 +1,8 @@
 import json
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import torch
-from transformers import  AutoTokenizer, AutoModelForCausalLM 
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import random
 random.seed(0)
 from datasets import load_dataset
@@ -68,39 +69,28 @@ def get_params(model, layer_ids, param_ids):
     return model, tokenizer """
 
 def load_model(model_name_or_path):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
     model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
-        device_map="auto",
-        torch_dtype=torch.float16,        # ✅ au lieu de quantization_config=...
-        trust_remote_code=True
-    )
+        torch_dtype=torch.float16,
+        device_map=None,
+    ).to(device)
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name_or_path,
-        trust_remote_code=True,
-        use_fast=False
-    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
+
     return model, tokenizer
 
-
-""" def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_size=4):
+def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_size=4):
     def get_dataset(name):
         data = []
         if name == "wikitext":
             raw_data = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
             for x in raw_data:
                 if len(x['text']) > min_len:
-                    data.append(str(x['text']))
-
-        elif name == "muse-news":
-            # Assumes muse-news is available on HuggingFace Hub
-            raw_data = load_dataset("muse-bench/MUSE-News", "knowmem", split="train", token=os.getenv("HF_TOKEN"))
-            for x in raw_data:
-                if len(x['text']) > min_len:
-                    data.append(str(x['text']))
-        
+                    data.append(str(x['text']))        
         else:
             assert os.getenv("HF_TOKEN"), "HF_TOKEN is not set"
             dataset = load_dataset(f"cais/wmdp-{name}", split="train", token=os.getenv("HF_TOKEN"))
@@ -113,9 +103,9 @@ def load_model(model_name_or_path):
     return (
         [get_dataset(c) for c in forget_corpora],
         [get_dataset(c) for c in retain_corpora]
-    ) """
+    )
 
-def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_size=4):
+"""def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_size=4):
     def get_dataset(name):
         data = []
 
@@ -124,12 +114,31 @@ def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_siz
             for x in raw_data:
                 if len(x['text']) > min_len:
                     data.append(str(x['text']))
-        elif name in ["retain_qa", "retain_qa_icl", "forget_qa", "forget_qa_icl"]:
-            dataset = load_dataset("muse-bench/MUSE-News", "knowmem", split=name)
+
+        elif name == "retain_qa":
+            dataset = load_dataset("muse-bench/MUSE-News", 'knowmem', split="retain_qa")
             for line in dataset:
-                prompt = f"Q: {line['question']}\nA: {line['answer']}"
-                if len(prompt) > min_len:
-                    data.append(prompt)
+                if len(line['text']) > min_len:
+                    data.append(str(line['text']))
+        
+        elif name == "retain_qa_icl":
+            dataset = load_dataset("muse-bench/MUSE-News", 'knowmem', split="retain_qa_icl")
+            for line in dataset:
+                if len(line['text']) > min_len:
+                    data.append(str(line['text']))
+        
+        elif name == "forget_qa":
+            dataset = load_dataset("muse-bench/MUSE-News", 'knowmem', split="forget_qa")
+            for line in dataset:
+                if len(line['text']) > min_len:
+                    data.append(str(line['text']))
+
+        elif name  == "forget_qa_icl":
+            dataset = load_dataset("muse-bench/MUSE-News", 'knowmem', split="forget_qa_icl")
+            for line in dataset:
+                if len(line['text']) > min_len:
+                    data.append(str(line['text']))
+        
         else:
             raise ValueError(f"Dataset name '{name}' not recognized")
 
@@ -140,4 +149,4 @@ def get_data(forget_corpora, retain_corpora, min_len=50, max_len=2000, batch_siz
     return (
         [get_dataset(c) for c in forget_corpora],
         [get_dataset(c) for c in retain_corpora]
-    )
+    )"""
